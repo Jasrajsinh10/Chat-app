@@ -1,0 +1,38 @@
+{
+  "name": "chat-app",
+  "private": true,
+  "version": "0.0.0",
+  "description": "a Sails application",
+  "keywords": [],
+  "dependencies": {
+    "@sailshq/lodash": "^3.10.3",
+    "sails": "^1.5.9",
+    "sails-hook-orm": "^4.0.0",
+    "sails-hook-sockets": "^3.0.0",
+    "sails-mongo": "^2.1.1",
+    "socket.io": "^4.7.5"
+  },
+  "devDependencies": {
+    "eslint": "5.16.0"
+  },
+  "scripts": {
+    "start": "NODE_ENV=production node app.js",
+    "test": "npm run lint && npm run custom-tests && echo 'Done.'",
+    "lint": "./node_modules/eslint/bin/eslint.js . --max-warnings=0 --report-unused-disable-directives && echo '✔  Your .js files look good.'",
+    "custom-tests": "echo \"(No other custom tests yet.)\" && echo"
+  },
+  "main": "app.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/ztlab58/chat-app.git"
+  },
+  "author": "ztlab58",
+  "license": "ISC",
+  "engines": {
+    "node": "^20.10"
+  },
+  "bugs": {
+    "url": "https://github.com/ztlab58/chat-app/issues"
+  },
+  "homepage": "https://github.com/ztlab58/chat-app#readme"
+}
