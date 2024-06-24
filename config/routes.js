@@ -15,5 +15,6 @@ module.exports.routes = {
   'GET /room/:userId': 'RoomController.list',
   'POST /message': 'MessageController.create',
   'GET /message/:roomId': 'MessageController.find',
+  'GET /lastmessage/:roomId': 'MessageController.findlastmessage',
 };
 

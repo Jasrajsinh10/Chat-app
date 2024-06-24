@@ -6,11 +6,20 @@
  */
 
 module.exports = {
-  create: async function(req, res) {
+   
+  create: async function (req, res) {
+    let response = { ...sails.config.custom.response };
     try {
       const { user1, user2 } = req.body;
-      const room = await Room.create({ users: [user1, user2] }).fetch();
-      return res.json(room);
+      const room = await Room.find({ users: [user1, user2] })
+      if (room) {
+        response.status = 200;
+        response.error = "room alredy exsists"
+      }
+      else {
+        const room = await Room.create({ users: [user1, user2] }).fetch();
+        return res.json(response.status,room);
+      }
     } catch (err) {
       return res.serverError(err);
     }
@@ -18,7 +27,7 @@ module.exports = {
 
   list: async function(req, res) {
     try {
-      const { userId } = req.params;
+      const  userId  = req.params;
       const rooms = await Room.find({ users: userId }).populate('users');
       
       for (let room of rooms) {
