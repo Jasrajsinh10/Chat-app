@@ -1,12 +1,16 @@
 module.exports = {
+  
   create: async function (req, res) {
     let response = { ...sails.config.custom.response };
     const { username } = req.body;
-
     try {
+      if (!username) {
+        response.status = 400;
+        response.error = "username not given"
+        return res.status(400).json(response)
+      }
       // First, check if the user already exists
       const existingUser = await User.findOne({ username });
-      console.log('existingUser: ', existingUser);
       
       if (existingUser) {
         // User exists, return the existing user
@@ -27,12 +31,18 @@ module.exports = {
     }
   },
 
-  find: async function(req, res) {
+  find: async function (req, res) {
+    let response = { ...sails.config.custom.response };
     try {
       const users = await User.find();
-      return res.json(users);
+      response.status = 200;
+      response.data = users;
+      response.message = "List of all users"
+      return res.status(200).json(response);
     } catch (err) {
-      return res.serverError(err);
+      response.status = 400;
+      response.error = err;
+      return res.serverError(response);
     }
   },
 };

@@ -5,41 +5,70 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 
+// api/controllers/MessageController.js
 module.exports = {
-  
   create: async function (req, res) {
     let response = { ...sails.config.custom.response };
     try {
-      const message = await Message.create(req.body).fetch();
-      return res.json(message);
+      const { content, userId, roomId } = req.body;
+      
+      if (!content || !userId || !roomId) {
+        response.status = 400;
+        response.error = "Content, userId or roomId not provided";
+        return res.status(400).json(response);
+      }
+
+      // Find the Userrooms entry
+      const userRoom = await Userrooms.findOne({ user: userId, rooms: roomId });
+      if (!userRoom) {
+        response.status = 400;
+        response.error = "User is not part of the room";
+        return res.status(400).json(response);
+      }
+
+      // Create the message
+      const message = await Message.create({ content:content, RoomUser: userRoom.id }).fetch();
+      response.status = 201;
+      response.data = message;
+      return res.status(201).json(response);
+      
     } catch (err) {
-      return res.serverError(err);
+      response.status = 500;
+      response.error = err;
+      return res.serverError(response);
     }
   },
 
-  find: async function(req, res) {
+  list: async function (req, res) {
+    let response = { ...sails.config.custom.response };
     try {
       const { roomId } = req.params;
-      const messages = await Message.find({ room: roomId }).populate('user');
-      return res.json(messages);
+
+      if (!roomId) {
+        response.status = 400;
+        response.error = "roomId not provided";
+        return res.status(400).json(response);
+      }
+
+      // Find all messages in the room
+      const userRooms = await Userrooms.find({ rooms: roomId }).populate('user');
+      const messages = await Message.find({ RoomUser: userRooms.map(ur => ur.id) }).populate('RoomUser');
+
+      // Include user details in messages
+      for (let message of messages) {
+        const userRoom = userRooms.find(ur => ur.id === message.RoomUser);
+        message.user = userRoom ? userRoom.user : null;
+      }
+
+      response.status = 200;
+      response.data = messages;
+      return res.status(200).json(response);
+      
     } catch (err) {
-      return res.serverError(err);
+      response.status = 500;
+      response.error = err;
+      return res.serverError(response);
     }
-  },
-
-  findlastmessage: async function(req, res) {
-  try {
-    const { roomId } = req.params;
-    const lastMessage = await Message.find({ room: roomId })
-     .sort({ createdAt: -1 }) // sort by createdAt in descending order (newest first)
-     .limit(1) // limit to a single message
-      .populate('user');
-    
-    return res.json(lastMessage[0].content);
-  } catch (err) {
-    return res.serverError(err);
   }
-}
 };
-
 

@@ -5,20 +5,37 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 
+const userrooms = require("../models/userrooms");
+
 module.exports = {
    
   create: async function (req, res) {
     let response = { ...sails.config.custom.response };
     try {
-      const { user1, user2 } = req.body;
-      const room = await Room.find({ users: [user1, user2] })
+      const { roomname,user1,user2} = req.body;
+      console.log('user: ', user1,user2);
+      if (!roomname) {
+        response.status = 400;
+        response.error = "roomname not given"
+        return res.status(400).json(response)
+      }
+      const room = await Room.findOne({ roomname })
       if (room) {
         response.status = 200;
         response.error = "room alredy exsists"
+        return res.json(response);
       }
       else {
-        const room = await Room.create({ users: [user1, user2] }).fetch();
-        return res.json(response.status,room);
+        const room = await Room.create({ roomname }).fetch();
+        console.log('room: ', room);
+        const roomid = room.id;
+        const user1room = await Userrooms.create({ user:user1, rooms:roomid }).fetch();
+        console.log('user1room: ', user1room);
+        const user2room = await Userrooms.create({ user:user2, rooms:roomid }).fetch();
+        console.log('user2room: ', user2room);
+        response.status = 201;
+        response.data = room;
+        return res.json(response);
       }
     } catch (err) {
       return res.serverError(err);
