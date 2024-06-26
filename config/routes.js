@@ -9,8 +9,8 @@
  */
 
 module.exports.routes = {
-  'POST /user': 'UserController.create',
-  'GET /user': 'UserController.find',
+  'POST /user': 'Usercontroller.create',
+  // 'GET /user': 'UserController.find',
   'POST /room': 'RoomController.create',
   'GET /room/:userId': 'RoomController.list',
   'POST /message': 'MessageController.create',

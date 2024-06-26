@@ -7,14 +7,9 @@
 
 module.exports = {
   attributes: {
-    users: {
-      collection: 'user',
-      type:"array",
-      via: 'rooms',
-    },
-    messages: {
-      collection: 'message',
-      via: 'room',
+    roomname: {
+      type: "string",
+      required: true
     },
   },
 };

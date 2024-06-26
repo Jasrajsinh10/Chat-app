@@ -9,17 +9,13 @@ module.exports = {
   attributes: {
     username: {
       type: 'string',
-      required: true,
       unique: true,
+      required: true,
     },
-    messages: {
-      collection: 'message',
-      via: 'user',
-    },
-    rooms: {
-      collection: 'room',
-      via: 'users',
-    },
+    room: {
+      collection: "Userrooms",
+      via : "user"
+    }
   },
 };
 

@@ -27,15 +27,14 @@ module.exports = {
 
   list: async function(req, res) {
     try {
-      const  userId  = req.params;
-      const rooms = await Room.find({ users: userId }).populate('users');
-      
+      const { userId } = req.params;
+      const user = await User.findOne(userId);
+      console.log('user: ', user.room);
+      const rooms = await user.room.populate('messages');
       for (let room of rooms) {
-        const lastMessage = await Message.find({ room: room.id })
-          .sort('createdAt DESC')
-          .limit(1);
-        room.lastMessage = lastMessage[0];
-      }
+      const lastMessage = room.messages[room.messages.length - 1];
+      room.lastMessage = lastMessage;
+    }   
       
       return res.json(rooms);
     } catch (err) {
